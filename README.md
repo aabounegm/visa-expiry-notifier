@@ -1,2 +1,4 @@
-# visa-expiry-notifier
-A telegram bot to notify intl. students of their visa expiration dates
+# Visa Expiry Notifier
+
+This project is a telegram bot whose purpose is to notify international students at Innopolis
+University about the expiration of their visa and registration cards.
