@@ -1,0 +1,25 @@
+{
+  "name": "visa-expiry-notifier",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A Telegram bot to notify Innopolis students of their visa expiration",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aabounegm/visa-expiry-notifier.git"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "typescript"
+  ],
+  "author": "Abdelrahman Abounegm",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aabounegm/visa-expiry-notifier/issues"
+  },
+  "homepage": "https://github.com/aabounegm/visa-expiry-notifier#readme"
+}
