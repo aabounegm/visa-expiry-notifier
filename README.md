@@ -12,6 +12,7 @@ After that, you need to create a `.env` file in the project directory and fill i
 ```bash
 BOT_TOKEN= # Telegram bot token
 SHEETS_API_KEY= # Google Sheets API key
+OMNIDESK_API_KEY= # Omnidesk API key
 ```
 
 Then, run `npm run build` to build the project and `npm start` to run it.
