@@ -1,4 +1,4 @@
-import { type InferCreationAttributes } from "sequelize";
+import { Op, type InferCreationAttributes } from "sequelize";
 import { User } from "./user";
 import { sequelize } from "./index";
 import { getAllStudents } from "../sheets/api";
@@ -37,4 +37,40 @@ export async function populateUsers() {
   });
   console.log("Inserting", usersToInsert.length, "users");
   await User.bulkCreate(usersToInsert, { ignoreDuplicates: true });
+}
+
+async function getExpiringVisas(): Promise<User[]> {
+  const today = new Date();
+  const users = await User.findAll({
+    where: {
+      visaExpiration: {
+        [Op.lt]: new Date(today.getTime() + DAYS_TO_VISA_EXPIRY * 24 * 3600 * 1000),
+      },
+      visaLastNotified: {
+        [Op.or]: {
+          [Op.eq]: null,
+          [Op.lt]: sequelize.literal(`visaExpiration - ${DAYS_TO_VISA_EXPIRY}`),
+        },
+      },
+    },
+  });
+  return users;
+}
+
+async function getExpiringRegistrations(): Promise<User[]> {
+  const today = new Date();
+  const users = await User.findAll({
+    where: {
+      registrationExpiration: {
+        [Op.lt]: new Date(today.getTime() + DAYS_TO_REGISTRATION_EXPIRY * 24 * 3600 * 1000),
+      },
+      registrationLastNotified: {
+        [Op.or]: {
+          [Op.eq]: null,
+          [Op.lt]: sequelize.literal(`registrationExpiration - ${DAYS_TO_REGISTRATION_EXPIRY}`),
+        },
+      },
+    },
+  });
+  return users;
 }
