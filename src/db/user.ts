@@ -17,6 +17,10 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare visaLastNotified: Date | null;
   /** The last time this user has been notified about their expiring registration */
   declare registrationLastNotified: Date | null;
+  /** The date when this user's visa expires */
+  declare visaExpiration: Date | null;
+  /** The date when this user's registration expires */
+  declare registrationExpiration: Date | null;
 }
 
 export const attributes: ModelAttributes<User, InferAttributes<User>> = {
@@ -37,6 +41,12 @@ export const attributes: ModelAttributes<User, InferAttributes<User>> = {
     type: DataTypes.DATE,
   },
   registrationLastNotified: {
+    type: DataTypes.DATE,
+  },
+  visaExpiration: {
+    type: DataTypes.DATE,
+  },
+  registrationExpiration: {
     type: DataTypes.DATE,
   },
 };
