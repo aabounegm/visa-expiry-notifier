@@ -7,7 +7,6 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "populate": "node dist/populate.js",
     "lint": "prettier --check . && eslint .",
     "prepare": "husky install",
     "test": "echo \"Error: no test specified\" && exit 1"
