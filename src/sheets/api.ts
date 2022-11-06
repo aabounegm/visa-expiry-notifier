@@ -30,14 +30,23 @@ interface ExpiringDocs {
   expiringRegistrations: Omit<User, "visaExpiry">[];
 }
 
+const dateRegex = /(\d{1,2})\.(\d{1,2})\.(\d{4})/;
+function getDateFromField(field: string) {
+  if (dateRegex.test(field)) {
+    const [day, month, year] = field.split(".");
+    return new Date(`${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`);
+  }
+  return new Date(NaN);
+}
+
 async function getStudentsInSheet(sheet: StudyYear) {
   const rows = await doc.sheetsByTitle[sheet].getRows();
   return rows.map((row: Record<string, string>) => ({
     name: row[Fields.NAME],
     email: row[Fields.EMAIL],
-    telegram: row[Fields.TELEGRAM].replace("@", ""),
-    registrationExpiry: new Date(row[Fields.REGISTRATION_EXPIRY]),
-    visaExpiry: new Date(row[Fields.VISA_EXPIRY]),
+    telegram: row[Fields.TELEGRAM]?.replace("@", "") ?? "",
+    registrationExpiry: getDateFromField(row[Fields.REGISTRATION_EXPIRY]),
+    visaExpiry: getDateFromField(row[Fields.VISA_EXPIRY]),
     year: sheet,
   }));
 }
