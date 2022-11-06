@@ -30,9 +30,9 @@ interface ExpiringDocs {
   expiringRegistrations: Omit<User, "visaExpiry">[];
 }
 
-export async function getExpiringDocsForClass(sheet: StudyYear): Promise<ExpiringDocs> {
+async function getStudentsInSheet(sheet: StudyYear) {
   const rows = await doc.sheetsByTitle[sheet].getRows();
-  const users: User[] = rows.map((row: Record<string, string>) => ({
+  return rows.map((row: Record<string, string>) => ({
     name: row[Fields.NAME],
     email: row[Fields.EMAIL],
     telegram: row[Fields.TELEGRAM].replace("@", ""),
@@ -40,6 +40,10 @@ export async function getExpiringDocsForClass(sheet: StudyYear): Promise<Expirin
     visaExpiry: new Date(row[Fields.VISA_EXPIRY]),
     year: sheet,
   }));
+}
+
+export async function getExpiringDocsForClass(sheet: StudyYear): Promise<ExpiringDocs> {
+  const users = await getStudentsInSheet(sheet);
   const expiringVisas = users.filter(isVisaAboutToExpire);
   const expiringRegistrations = users.filter(isVisaAboutToExpire);
   return { expiringVisas, expiringRegistrations };
@@ -54,4 +58,11 @@ export async function getAllExpiringDocs(): Promise<ExpiringDocs> {
     .map((expiring) => expiring.expiringRegistrations)
     .flat();
   return { expiringVisas, expiringRegistrations };
+}
+
+export async function getAllStudents(): Promise<User[]> {
+  await doc.loadInfo();
+  const sheetNames = Object.values(StudyYear);
+  const allStudents = await Promise.all(sheetNames.map(getStudentsInSheet));
+  return allStudents.flat();
 }
