@@ -35,7 +35,7 @@ export async function getExpiringDocsForClass(sheet: StudyYear): Promise<Expirin
   const users: User[] = rows.map((row: Record<string, string>) => ({
     name: row[Fields.NAME],
     email: row[Fields.EMAIL],
-    telegram: row[Fields.TELEGRAM],
+    telegram: row[Fields.TELEGRAM].replace("@", ""),
     registrationExpiry: new Date(row[Fields.REGISTRATION_EXPIRY]),
     visaExpiry: new Date(row[Fields.VISA_EXPIRY]),
     year: sheet,
