@@ -30,12 +30,11 @@ export const attributes: ModelAttributes<User, InferAttributes<User>> = {
   },
   telegramUsername: {
     type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
+    primaryKey: true,
   },
   telegramChatId: {
     type: DataTypes.INTEGER,
-    primaryKey: true,
+    allowNull: true,
   },
   visaLastNotified: {
     type: DataTypes.DATE,
