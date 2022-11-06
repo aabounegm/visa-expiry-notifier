@@ -1,4 +1,4 @@
-import type { StudyYear } from "./sheets-service";
+import type { StudyYear } from "./api";
 
 export interface User {
   name: string;
