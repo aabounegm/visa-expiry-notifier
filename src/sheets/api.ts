@@ -26,8 +26,8 @@ enum Fields {
 }
 
 interface ExpiringDocs {
-  expiringVisas: Omit<User, "registrationExpiry">[];
-  expiringRegistrations: Omit<User, "visaExpiry">[];
+  expiringVisas: User[];
+  expiringRegistrations: User[];
 }
 
 const dateRegex = /(\d{1,2})\.(\d{1,2})\.(\d{4})/;
