@@ -16,3 +16,5 @@ OMNIDESK_API_KEY= # Omnidesk API key
 ```
 
 Then, run `npm run build` to build the project and `npm start` to run it.
+
+Before starting the bot for the first time, you should run `npm run populate` to populate the database with the data from Omnidesk.
