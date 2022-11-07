@@ -65,7 +65,7 @@ interface Message {
   type: NotificationType;
 }
 
-const dariaChatId = 621181493; // Actually @aabounegm's for now
+const dariaChatId = 701559870;
 
 export async function getPendingMesages(): Promise<Message[]> {
   const {
