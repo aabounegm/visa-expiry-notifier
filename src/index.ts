@@ -6,7 +6,7 @@ import { Telegraf } from "telegraf";
 // Order is necessary to load .env file before other imports
 dotenv.config();
 import { populateUsers } from "./db/utils";
-import { getPendingMesages } from "./notifier";
+import { getPendingMesages, updateLastNotified } from "./notifier";
 
 const bot = new Telegraf(process.env.BOT_TOKEN as string);
 
@@ -26,9 +26,10 @@ cron.schedule("0 9 * * 1-5", async (now) => {
   console.log("Checking for any expiring docs");
   const messages = await getPendingMesages();
   await Promise.all(
-    messages.map(({ chat_id, message }) =>
-      bot.telegram.sendMessage(chat_id, message, { parse_mode: "MarkdownV2" })
-    )
+    messages.map(async ({ chat_id, message, type }) => {
+      await bot.telegram.sendMessage(chat_id, message, { parse_mode: "MarkdownV2" });
+      await updateLastNotified(chat_id, type);
+    })
   );
   console.log(`Sent ${messages.length} notifications.`);
 });

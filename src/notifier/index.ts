@@ -54,9 +54,15 @@ async function getStudentsToBeNotified() {
   };
 }
 
+export enum NotificationType {
+  VISA = "visa",
+  REGISTRATION = "registration",
+}
+
 interface Message {
   chat_id: number;
   message: string;
+  type: NotificationType;
 }
 
 const dariaChatId = 621181493; // Actually @aabounegm's for now
@@ -75,6 +81,7 @@ export async function getPendingMesages(): Promise<Message[]> {
       return {
         chat_id: student.telegramChatId,
         message: expiringRegistrationMessage,
+        type: NotificationType.REGISTRATION,
       };
     })
   );
@@ -83,6 +90,7 @@ export async function getPendingMesages(): Promise<Message[]> {
       return {
         chat_id: student.telegramChatId,
         message: expiringVisaMessage,
+        type: NotificationType.VISA,
       };
     })
   );
@@ -91,6 +99,7 @@ export async function getPendingMesages(): Promise<Message[]> {
       return {
         chat_id: dariaChatId,
         message: dariaNotification(student, "registration"),
+        type: NotificationType.REGISTRATION,
       };
     })
   );
@@ -99,9 +108,26 @@ export async function getPendingMesages(): Promise<Message[]> {
       return {
         chat_id: dariaChatId,
         message: dariaNotification(student, "visa"),
+        type: NotificationType.VISA,
       };
     })
   );
 
   return messages;
+}
+
+export async function updateLastNotified(chat_id: number, type: NotificationType) {
+  const [affectedCount] = await User.update(
+    type == NotificationType.REGISTRATION
+      ? { registrationExpiration: new Date() }
+      : { visaExpiration: new Date() },
+    {
+      where: {
+        telegramChatId: chat_id,
+      },
+    }
+  );
+  if (affectedCount === 0) {
+    console.log("No user with chat_id", chat_id);
+  }
 }
