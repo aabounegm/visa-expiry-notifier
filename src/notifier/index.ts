@@ -126,18 +126,19 @@ export async function getPendingMesages(): Promise<Message[]> {
   return messages;
 }
 
-export async function updateLastNotified(chat_id: number, type: NotificationType) {
+export async function updateLastNotified(username: string, type: NotificationType) {
+  if (!username) return;
   const [affectedCount] = await User.update(
     type == NotificationType.REGISTRATION
       ? { registrationLastNotified: new Date() }
       : { visaLastNotified: new Date() },
     {
       where: {
-        telegramChatId: chat_id,
+        telegramUsername: username,
       },
     }
   );
   if (affectedCount === 0) {
-    console.log("No user with chat_id", chat_id);
+    console.log("No user found with alias:", username);
   }
 }

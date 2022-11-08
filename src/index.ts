@@ -23,12 +23,13 @@ cron.schedule("0 8 * * 1-5", async (now) => {
 // At 9:00 AM every weekday, send notifications to users whose visa or registration is about to expire
 cron.schedule("0 9 * * 1-5", async (now) => {
   if (now === "manual") return; // Not sure why this is part of the type.
-  console.log("Checking for any expiring docs");
+  console.log(`[${new Date().toLocaleDateString()}] Checking for any expiring docs`);
   const messages = await getPendingMesages();
   await Promise.all(
-    messages.map(async ({ chat_id, message, type }) => {
+    messages.map(async ({ chat_id, username, message, type }) => {
+      console.log(`Notifying ${chat_id} (@${username}) about expiring ${type}`);
       await bot.telegram.sendMessage(chat_id, message, { parse_mode: "MarkdownV2" });
-      await updateLastNotified(chat_id, type);
+      await updateLastNotified(username, type);
     })
   );
   console.log(`Sent ${messages.length} notifications.`);
