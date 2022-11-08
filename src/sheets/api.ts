@@ -1,5 +1,5 @@
 import { GoogleSpreadsheet } from "google-spreadsheet";
-import { isVisaAboutToExpire } from "./date-utils";
+import { isRegistrationAboutToExpire, isVisaAboutToExpire } from "./date-utils";
 import type { User } from "./user";
 
 const SHEET_ID = "1K2US-p5tnt4kL1TK6_FsIBliioUjO3L8Y5_OhMQ7jfc";
@@ -54,7 +54,7 @@ async function getStudentsInSheet(sheet: StudyYear) {
 export async function getExpiringDocsForClass(sheet: StudyYear): Promise<ExpiringDocs> {
   const users = await getStudentsInSheet(sheet);
   const expiringVisas = users.filter(isVisaAboutToExpire);
-  const expiringRegistrations = users.filter(isVisaAboutToExpire);
+  const expiringRegistrations = users.filter(isRegistrationAboutToExpire);
   return { expiringVisas, expiringRegistrations };
 }
 
