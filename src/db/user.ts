@@ -12,7 +12,7 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   /** Excluding the `@` prefix */
   declare telegramUsername: string;
   /** The `chat_id` used to send a message from the Telegram bot */
-  declare telegramChatId: number;
+  declare telegramChatId: number | null;
   /** The last time this user has been notified about their expiring visa */
   declare visaLastNotified: Date | null;
   /** The last time this user has been notified about their expiring registration */
