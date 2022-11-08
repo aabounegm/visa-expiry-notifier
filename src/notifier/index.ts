@@ -58,6 +58,7 @@ export enum NotificationType {
 
 interface Message {
   chat_id: number;
+  username: string;
   message: string;
   type: NotificationType;
 }
@@ -81,6 +82,7 @@ export async function getPendingMesages(): Promise<Message[]> {
       return {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         chat_id: student.telegramChatId!,
+        username: student.telegramUsername,
         message: expiringRegistrationMessage,
         type: NotificationType.REGISTRATION,
       };
@@ -91,6 +93,7 @@ export async function getPendingMesages(): Promise<Message[]> {
       return {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         chat_id: student.telegramChatId!,
+        username: student.telegramUsername,
         message: expiringVisaMessage,
         type: NotificationType.VISA,
       };
@@ -100,6 +103,7 @@ export async function getPendingMesages(): Promise<Message[]> {
     ...notFoundRegistration.map((student) => {
       return {
         chat_id: dariaChatId,
+        username: student.telegram,
         message: dariaNotification(student, "registration"),
         type: NotificationType.REGISTRATION,
       };
@@ -109,6 +113,7 @@ export async function getPendingMesages(): Promise<Message[]> {
     ...notFoundVisa.map((student) => {
       return {
         chat_id: dariaChatId,
+        username: student.telegram,
         message: dariaNotification(student, "visa"),
         type: NotificationType.VISA,
       };
