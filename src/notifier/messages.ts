@@ -21,5 +21,7 @@ Failure to provide the documents on time can result in paying a fine and being i
 P\\.S\\.: This is an automated message\\. Do not reply to this message\\. If you already brought the documents, you can ignore this message\\.`;
 
 export function dariaNotification(user: User, documentType: string) {
-  return `The user ${user.name} (@${user.telegram}) could not be reached about their expiring ${documentType}`;
+  let studentName = user.name;
+  if (user.telegram !== "") studentName += ` (@${user.telegram})`;
+  return `The student ${studentName} could not be reached about their expiring ${documentType}`;
 }
