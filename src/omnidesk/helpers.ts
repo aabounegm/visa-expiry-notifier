@@ -6,7 +6,9 @@ export function removeDuplicates(users: OmnideskUser[]): OmnideskUser[] {
   return users.filter((user, i, users) => {
     if (user.user_screen_name in userNameCache) {
       const idx = userNameCache[user.user_screen_name];
-      console.warn(`Duplicate telegram alias found:`, user, users[idx]);
+      if (users[idx].telegram_id !== user.telegram_id) {
+        console.warn(`Duplicate telegram alias found:`, user, users[idx]);
+      }
       return false;
     }
     userNameCache[user.user_screen_name] = i;
