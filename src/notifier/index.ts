@@ -16,9 +16,12 @@ async function getStudentsForDoc(users: SheetUser[], type: "visa" | "registratio
         .map((visa) => visa.telegram),
       [`${type}LastNotified`]: {
         [Op.or]: {
-          [Op.eq]: null,
+          [Op.is]: null,
           [Op.lt]: sequelize.literal(`DATE(${type}Expiration, '-${days} days')`),
         },
+      },
+      [`${type}Expiration`]: {
+        [Op.ne]: "Invalid date",
       },
     },
   });
