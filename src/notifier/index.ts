@@ -1,51 +1,48 @@
 import { getAllExpiringDocs } from "../sheets/api";
 import { DAYS_TO_VISA_EXPIRY } from "../db/utils";
-import { User } from "../db";
+import { sequelize, User } from "../db";
 import { expiringRegistrationMessage, expiringVisaMessage, dariaNotification } from "./messages";
+import { DAYS_TO_REGISTRATION_EXPIRY } from "../sheets/date-utils";
+import { User as SheetUser } from "../sheets/user";
+import { Op } from "sequelize";
+
+async function getStudentsForDoc(users: SheetUser[], type: "visa" | "registration") {
+  const days = type === "visa" ? DAYS_TO_VISA_EXPIRY : DAYS_TO_REGISTRATION_EXPIRY;
+  // Those are supposed to get notified and haven't been recently notified
+  const unnotified = await User.findAll({
+    where: {
+      telegramUsername: users
+        .filter(({ telegram }) => telegram !== "")
+        .map((visa) => visa.telegram),
+      [`${type}LastNotified`]: {
+        [Op.or]: {
+          [Op.eq]: null,
+          [Op.lt]: sequelize.literal(`DATE(${type}Expiration, '-${days} days')`),
+        },
+      },
+    },
+  });
+  // Those are supposed to get notified but haven't been found in the database
+  const notFound = users.filter((visa) => {
+    const dbUser = unnotified.find((student) => student.telegramUsername === visa.telegram);
+    return dbUser?.telegramChatId == null;
+  });
+  return {
+    unnotified: unnotified.filter((student) => student.telegramChatId != null),
+    notFound,
+  };
+}
 
 async function getStudentsToBeNotified() {
   const { expiringRegistrations, expiringVisas } = await getAllExpiringDocs();
-  const studentsVisa = await User.findAll({
-    where: {
-      telegramUsername: expiringVisas.map((visa) => visa.telegram),
-    },
-  });
-  const notFoundVisa = expiringVisas.filter(
-    (visa) =>
-      studentsVisa.find((student) => student.telegramUsername === visa.telegram) === undefined
-  );
 
-  const unnotifiedStudentsVisa = studentsVisa.filter(({ visaExpiration, visaLastNotified }) => {
-    if (visaLastNotified == null) return true;
-    if (visaExpiration == null) return false;
-    const notifiedRecently =
-      visaLastNotified.getTime() >=
-      visaExpiration.getTime() - DAYS_TO_VISA_EXPIRY * 24 * 3600 * 1000;
-    return !notifiedRecently;
-  });
-  // Repeat same procedure for registration
-  // TODO: cleanup and refactor
-  const studentsRegistration = await User.findAll({
-    where: {
-      telegramUsername: expiringRegistrations.map((visa) => visa.telegram),
-    },
-  });
-  const notFoundRegistration = expiringRegistrations.filter(
-    (registration) =>
-      studentsVisa.find((student) => student.telegramUsername === registration.telegram) ===
-      undefined
+  const { notFound: notFoundVisa, unnotified: unnotifiedStudentsVisa } = await getStudentsForDoc(
+    expiringVisas,
+    "visa"
   );
+  const { notFound: notFoundRegistration, unnotified: unnotifiedStudentsRegistration } =
+    await getStudentsForDoc(expiringRegistrations, "registration");
 
-  const unnotifiedStudentsRegistration = studentsRegistration.filter(
-    ({ registrationExpiration, registrationLastNotified }) => {
-      if (registrationLastNotified == null) return true;
-      if (registrationExpiration == null) return false;
-      const notifiedRecently =
-        registrationLastNotified.getTime() >=
-        registrationExpiration.getTime() - DAYS_TO_VISA_EXPIRY * 24 * 3600 * 1000;
-      return !notifiedRecently;
-    }
-  );
   return {
     unnotifiedStudentsVisa,
     notFoundVisa,
@@ -75,11 +72,15 @@ export async function getPendingMesages(): Promise<Message[]> {
     unnotifiedStudentsVisa,
   } = await getStudentsToBeNotified();
 
+  console.log("Students to be notified about visa:", unnotifiedStudentsVisa.length);
+  console.log("Students to be notified about registration:", unnotifiedStudentsRegistration.length);
+  console.log("Students not found in database:", notFoundVisa.length + notFoundRegistration.length);
   const messages: Message[] = [];
   messages.push(
     ...unnotifiedStudentsRegistration.map((student) => {
       return {
-        chat_id: student.telegramChatId,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        chat_id: student.telegramChatId!,
         message: expiringRegistrationMessage,
         type: NotificationType.REGISTRATION,
       };
@@ -88,7 +89,8 @@ export async function getPendingMesages(): Promise<Message[]> {
   messages.push(
     ...unnotifiedStudentsVisa.map((student) => {
       return {
-        chat_id: student.telegramChatId,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        chat_id: student.telegramChatId!,
         message: expiringVisaMessage,
         type: NotificationType.VISA,
       };
@@ -119,8 +121,8 @@ export async function getPendingMesages(): Promise<Message[]> {
 export async function updateLastNotified(chat_id: number, type: NotificationType) {
   const [affectedCount] = await User.update(
     type == NotificationType.REGISTRATION
-      ? { registrationExpiration: new Date() }
-      : { visaExpiration: new Date() },
+      ? { registrationLastNotified: new Date() }
+      : { visaLastNotified: new Date() },
     {
       where: {
         telegramChatId: chat_id,
