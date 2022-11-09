@@ -43,5 +43,8 @@ export async function populateUsers() {
     usersToInsert.length - commonUsers.length
   );
   console.log("Inserting", usersToInsert.length, "users");
-  await User.bulkCreate(usersToInsert, { ignoreDuplicates: true });
+  await User.bulkCreate(usersToInsert, {
+    ignoreDuplicates: true,
+    updateOnDuplicate: ["registrationExpiration", "visaExpiration", "telegramChatId"],
+  });
 }
