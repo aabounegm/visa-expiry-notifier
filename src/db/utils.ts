@@ -42,7 +42,7 @@ export async function populateUsers() {
     "Users without Telegram (username or chat_id):",
     usersToInsert.length - commonUsers.length
   );
-  console.log("Inserting", usersToInsert.length, "users");
+  console.log("Inserting/updating", usersToInsert.length, "users");
   await User.bulkCreate(usersToInsert, {
     ignoreDuplicates: true,
     updateOnDuplicate: ["registrationExpiration", "visaExpiration", "telegramChatId"],
