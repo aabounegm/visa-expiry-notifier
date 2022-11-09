@@ -10,9 +10,6 @@ import { getPendingMesages, updateLastNotified } from "./notifier";
 
 const bot = new Telegraf(process.env.BOT_TOKEN as string);
 
-// TODO: When integrating with Omnidesk, we should not intercept any messages, including /start command
-// bot.start((ctx) => ctx.reply("Welcome!"));
-
 // At 8:00 AM every weekday, update our database with info from Omnidesk and Google Sheets
 cron.schedule("0 8 * * 1-5", async (now) => {
   if (now === "manual") return; // Not sure why this is part of the type.
@@ -35,9 +32,5 @@ cron.schedule("0 9 * * 1-5", async (now) => {
   console.log(`Sent ${messages.length} notifications.`);
 });
 
-// eslint-disable-next-line @typescript-eslint/no-floating-promises
-bot.launch().then(() => console.log("Bot started"));
-
-// Enable graceful stop
-process.once("SIGINT", () => bot.stop("SIGINT"));
-process.once("SIGTERM", () => bot.stop("SIGTERM"));
+// WARNING: uncommenting the following line will remove Omnidesk's webhook & start polling instead
+// bot.launch().then(() => console.log("Bot started"));
