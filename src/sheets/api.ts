@@ -5,7 +5,6 @@ import type { User } from "./user";
 const SHEET_ID = "1K2US-p5tnt4kL1TK6_FsIBliioUjO3L8Y5_OhMQ7jfc";
 
 const doc = new GoogleSpreadsheet(SHEET_ID);
-doc.useApiKey(process.env.SHEETS_API_KEY as string);
 
 export enum StudyYear {
   BACHELOR_1 = "БАК_1 курс",
@@ -70,6 +69,10 @@ export async function getAllExpiringDocs(): Promise<ExpiringDocs> {
 }
 
 export async function getAllStudents(): Promise<User[]> {
+  await doc.useServiceAccountAuth({
+    client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL as string,
+    private_key: process.env.GOOGLE_PRIVATE_KEY as string,
+  });
   await doc.loadInfo();
   const sheetNames = Object.values(StudyYear);
   const allStudents = await Promise.all(sheetNames.map(getStudentsInSheet));
