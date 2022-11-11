@@ -23,5 +23,5 @@ P\\.S\\.: This is an automated message\\. Do not reply to this message\\. If you
 export function dariaNotification(user: User, documentType: string) {
   let studentName = user.name;
   if (user.telegram !== "") studentName += ` (@${user.telegram})`;
-  return `The student ${studentName} could not be reached about their expiring ${documentType}`;
+  return `The student ${studentName} could not be reached about their expiring ${documentType}\\.`;
 }
