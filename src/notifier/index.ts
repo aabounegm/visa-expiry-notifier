@@ -13,7 +13,7 @@ async function getStudentsForDoc(users: SheetUser[], type: "visa" | "registratio
     where: {
       telegramUsername: users
         .filter(({ telegram }) => telegram !== "")
-        .map((visa) => visa.telegram),
+        .map((user) => user.telegram),
       [`${type}LastNotified`]: {
         [Op.or]: {
           [Op.is]: null,
@@ -25,10 +25,19 @@ async function getStudentsForDoc(users: SheetUser[], type: "visa" | "registratio
       },
     },
   });
+  const notified = await User.findAll({
+    where: {
+      [`${type}LastNotified`]: {
+        [Op.gte]: sequelize.literal(`DATE(${type}Expiration, '-${days} days')`),
+      },
+    },
+  });
   // Those are supposed to get notified but haven't been found in the database
   const notFound = users.filter((visa) => {
     const dbUser = unnotified.find((student) => student.telegramUsername === visa.telegram);
-    return dbUser?.telegramChatId == null;
+    const alreadyNotified =
+      notified.find((student) => student.telegramUsername === visa.telegram) != undefined;
+    return !alreadyNotified && dbUser?.telegramChatId == null;
   });
   return {
     unnotified: unnotified.filter((student) => student.telegramChatId != null),
