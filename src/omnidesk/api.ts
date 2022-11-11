@@ -40,7 +40,8 @@ export async function fetchAllOmnideskUsers() {
 
     // Convert data from object to array
     for (let i = 0; i < limit && users.length < total_count; i++) {
-      users.push(data[i].user);
+      const user = data[i].user;
+      users.push({ ...user, user_screen_name: user.user_screen_name.toLowerCase() });
     }
     page++;
   } while (users.length < total_count);

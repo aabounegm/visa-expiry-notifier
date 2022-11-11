@@ -65,5 +65,5 @@ export async function getAllStudents(): Promise<User[]> {
   await doc.loadInfo();
   const sheetNames = Object.values(StudyYear);
   const allStudents = await Promise.all(sheetNames.map(getStudentsInSheet));
-  return allStudents.flat();
+  return allStudents.flat().map((u) => ({ ...u, telegram: u.telegram.toLowerCase() }));
 }
