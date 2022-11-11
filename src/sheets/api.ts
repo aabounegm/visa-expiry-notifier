@@ -58,6 +58,10 @@ export async function getExpiringDocsForClass(sheet: StudyYear): Promise<Expirin
 }
 
 export async function getAllExpiringDocs(): Promise<ExpiringDocs> {
+  await doc.useServiceAccountAuth({
+    client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL as string,
+    private_key: process.env.GOOGLE_PRIVATE_KEY as string,
+  });
   await doc.loadInfo();
   const sheetNames = Object.values(StudyYear);
   const allExpiring = await Promise.all(sheetNames.map(getExpiringDocsForClass));
