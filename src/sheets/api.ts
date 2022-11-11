@@ -50,25 +50,10 @@ async function getStudentsInSheet(sheet: StudyYear) {
   }));
 }
 
-export async function getExpiringDocsForClass(sheet: StudyYear): Promise<ExpiringDocs> {
-  const users = await getStudentsInSheet(sheet);
+export async function getAllExpiringDocs(): Promise<ExpiringDocs> {
+  const users = await getAllStudents();
   const expiringVisas = users.filter(isVisaAboutToExpire);
   const expiringRegistrations = users.filter(isRegistrationAboutToExpire);
-  return { expiringVisas, expiringRegistrations };
-}
-
-export async function getAllExpiringDocs(): Promise<ExpiringDocs> {
-  await doc.useServiceAccountAuth({
-    client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL as string,
-    private_key: process.env.GOOGLE_PRIVATE_KEY as string,
-  });
-  await doc.loadInfo();
-  const sheetNames = Object.values(StudyYear);
-  const allExpiring = await Promise.all(sheetNames.map(getExpiringDocsForClass));
-  const expiringVisas = allExpiring.map((expiring) => expiring.expiringVisas).flat();
-  const expiringRegistrations = allExpiring
-    .map((expiring) => expiring.expiringRegistrations)
-    .flat();
   return { expiringVisas, expiringRegistrations };
 }
 
