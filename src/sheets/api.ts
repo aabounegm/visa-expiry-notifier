@@ -2,7 +2,7 @@ import { GoogleSpreadsheet } from "google-spreadsheet";
 import { isRegistrationAboutToExpire, isVisaAboutToExpire } from "./date-utils";
 import type { User } from "./user";
 
-const SHEET_ID = "1ySXtdQruP-ZnJAeT_7H9wnu39JC-Lu2VN3EOR2JMSKA";
+const SHEET_ID = "1vFmDJTnQdkkcU6XESmMHKzmKdXSSoyJ-VVZ5cENzE6s";
 
 const doc = new GoogleSpreadsheet(SHEET_ID);
 
