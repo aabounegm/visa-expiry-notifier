@@ -1,4 +1,5 @@
 import type { OmnideskUser } from "./types";
+import { overrides } from "./overrides";
 
 const API_KEY = process.env.OMNIDESK_API_KEY as string;
 const staffEmail = "v.kondratieva@innopolis.ru";
@@ -45,5 +46,8 @@ export async function fetchAllOmnideskUsers() {
   } while (users.length < total_count);
 
   const tgUsers = users.filter((user) => user.type === "telegram");
-  return tgUsers;
+  return tgUsers.map((user) => {
+    const override = overrides.find((o) => o.user_id === user.user_id);
+    return override ? { ...user, ...override } : user;
+  });
 }
