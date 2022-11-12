@@ -16,3 +16,28 @@ OMNIDESK_API_KEY= # Omnidesk API key
 ```
 
 Then, run `npm run build` to build the project and `npm start` to run it.
+
+## Building & Running the Dockerized app
+
+Make sure to have [docker](https://www.docker.com/) installed on your machine
+
+### Step 1:
+
+```
+//Build locally
+docker build -t visa-notifier/backend .
+```
+
+or
+
+```
+//Pull already built image
+docker pull visa-notifier/backend
+
+```
+
+### Step 2:
+
+```
+docker run -d visa-notifier/backend
+```
