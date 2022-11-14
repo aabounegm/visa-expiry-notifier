@@ -9,6 +9,7 @@ import { populateUsers } from "./db/utils";
 import { dariaChatId, getPendingMesages, updateLastNotified } from "./notifier";
 
 const bot = new Telegraf(process.env.BOT_TOKEN as string);
+const VISA_PAYMENT_SLIP = "https://imgur.com/Fe9irbv";
 
 // At 8:00 AM every weekday, update our database with info from Omnidesk and Google Sheets
 cron.schedule("0 8 * * 1-5", async () => {
@@ -29,6 +30,9 @@ cron.schedule("0 9 * * 1-5", async () => {
     console.log(`Notifying ${chat_id} (@${username}) about expiring ${type}`);
     if (chat_id !== dariaChatId) {
       await bot.telegram.sendMessage(chat_id, message, { parse_mode: "MarkdownV2" });
+      if (type === "visa") {
+        await bot.telegram.sendPhoto(chat_id, VISA_PAYMENT_SLIP);
+      }
     }
     await updateLastNotified(username, type);
     await delay(1000 / rateLimit);
