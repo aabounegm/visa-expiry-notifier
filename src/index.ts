@@ -29,9 +29,11 @@ cron.schedule("0 9 * * 1-5", async () => {
   for (const { chat_id, username, message, type } of messages) {
     console.log(`Notifying ${chat_id} (@${username}) about expiring ${type}`);
     if (chat_id !== dariaChatId) {
-      await bot.telegram.sendMessage(chat_id, message, { parse_mode: "MarkdownV2" });
+      await bot.telegram
+        .sendMessage(chat_id, message, { parse_mode: "MarkdownV2" })
+        .catch(console.error);
       if (type === "visa") {
-        await bot.telegram.sendPhoto(chat_id, VISA_PAYMENT_SLIP);
+        await bot.telegram.sendPhoto(chat_id, VISA_PAYMENT_SLIP).catch(console.error);
       }
     }
     await updateLastNotified(username, type);
@@ -40,7 +42,9 @@ cron.schedule("0 9 * * 1-5", async () => {
   const toDaria = messages.filter((message) => message.chat_id === dariaChatId);
   const dariaMsg = toDaria.map(({ message }) => message).join("\n");
   if (dariaMsg !== "") {
-    await bot.telegram.sendMessage(dariaChatId, dariaMsg, { parse_mode: "MarkdownV2" });
+    await bot.telegram
+      .sendMessage(dariaChatId, dariaMsg, { parse_mode: "MarkdownV2" })
+      .catch(console.error);
   }
   console.log(`Sent ${messages.length} notifications.`);
 });
