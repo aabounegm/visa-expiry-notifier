@@ -39,4 +39,4 @@ export const overrides: Override[] = [
   { user_id: 9472824, user_screen_name: "novarlic" }, // Nikola Novarlić
   { user_id: 3882735, user_screen_name: "Robertkai" }, // Roberto Chaves
   { user_id: 13619164, user_screen_name: "aamhmdi" }, // Ali Akbar
-];
+].map((o) => ({ ...o, user_screen_name: o.user_screen_name.toLowerCase() }));
