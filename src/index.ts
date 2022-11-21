@@ -13,6 +13,7 @@ const VISA_PAYMENT_SLIP = "https://imgur.com/Fe9irbv";
 
 // At 8:00 AM every weekday, update our database with info from Omnidesk and Google Sheets
 cron.schedule("0 8 * * 1-5", async () => {
+  console.log();
   await populateUsers();
   console.log("Updated database successfully (using Google Sheets and Omnidesk)");
 });
@@ -23,11 +24,12 @@ function delay(ms: number) {
 
 // At 9:00 AM every weekday, send notifications to users whose visa or registration is about to expire
 cron.schedule("0 9 * * 1-5", async () => {
-  console.log(`[${new Date().toLocaleDateString()}] Checking for any expiring docs`);
+  console.log(`[${new Date().toLocaleString()}] Checking for any expiring docs`);
   const messages = await getPendingMesages();
   const rateLimit = 25;
   for (const { chat_id, username, message, type } of messages) {
-    console.log(`Notifying ${chat_id} (@${username}) about expiring ${type}`);
+    const recipient = chat_id === dariaChatId ? "Daria" : chat_id;
+    console.log(`Notifying ${recipient} (@${username}) about expiring ${type}`);
     if (chat_id !== dariaChatId) {
       await bot.telegram
         .sendMessage(chat_id, message, { parse_mode: "MarkdownV2" })

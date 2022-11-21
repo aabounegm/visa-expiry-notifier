@@ -9,7 +9,7 @@ export const DAYS_TO_VISA_EXPIRY = 40;
 export const DAYS_TO_REGISTRATION_EXPIRY = 7;
 
 export async function populateUsers() {
-  console.log("Populating users...");
+  console.log(`[${new Date().toLocaleString()}] Populating users...`);
   await sequelize.sync();
   const sheetStudents = await getAllStudents();
   console.log("Total students in Sheet:", sheetStudents.length);
@@ -18,6 +18,7 @@ export async function populateUsers() {
   );
   console.log("Students in Sheet with Telegram:", sheetsUsersMap.size);
   const omniUsers = removeDuplicates(await fetchAllOmnideskUsers());
+  console.log("Total students in Omnidesk:", omniUsers.length);
   const commonUsers = omniUsers.filter(({ user_screen_name }) =>
     sheetsUsersMap.has(user_screen_name)
   );
