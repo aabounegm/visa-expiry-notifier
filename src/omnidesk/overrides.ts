@@ -20,7 +20,6 @@ export const overrides: Override[] = [
   { user_id: 13573534, user_screen_name: "md_khalil" }, // Mohammad Khalil
   { user_id: 25721269, user_screen_name: "Ahmed_Alii7" }, // Ahmed Mohsen Ali
   { user_id: 22559400, user_screen_name: "palLink" }, // Sourabh Pal
-  { user_id: 39015302, user_screen_name: "Eleutheromaniac_rabbit" }, // Ahmed Abid
   { user_id: 25827375, user_screen_name: "RamPrin" }, // Leonid Zelenskiy
   { user_id: 23857561, user_screen_name: "Leon_Parepko" }, // Leon Parepko
   { user_id: 38209603, user_screen_name: "Leflop_James" }, // Marat Akhmetov
