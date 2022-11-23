@@ -7,6 +7,7 @@ import { Telegraf } from "telegraf";
 dotenv.config();
 import { populateUsers } from "./db/utils";
 import { dariaChatId, getPendingMesages, updateLastNotified } from "./notifier";
+import { chunkMessages } from "./notifier/utils";
 
 const bot = new Telegraf(process.env.BOT_TOKEN as string);
 const VISA_PAYMENT_SLIP = "https://imgur.com/Fe9irbv";
@@ -42,10 +43,10 @@ cron.schedule("0 9 * * 1-5", async () => {
     await delay(1000 / rateLimit);
   }
   const toDaria = messages.filter((message) => message.chat_id === dariaChatId);
-  const dariaMsg = toDaria.map(({ message }) => message).join("\n");
-  if (dariaMsg !== "") {
+  const dariaMsgs = toDaria.map(({ message }) => message);
+  for (const msg of chunkMessages(dariaMsgs)) {
     await bot.telegram
-      .sendMessage(dariaChatId, dariaMsg, { parse_mode: "MarkdownV2" })
+      .sendMessage(dariaChatId, msg, { parse_mode: "MarkdownV2" })
       .catch(console.error);
   }
   console.log(`Sent ${messages.length} notifications.`);
