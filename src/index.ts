@@ -23,10 +23,24 @@ function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+interface TelegramError {
+  response: {
+    ok: false;
+    error_code: number;
+    description: string;
+  };
+  on: {
+    method: string;
+    payload: { chat_id: number };
+  };
+}
+
 // At 9:00 AM every weekday, send notifications to users whose visa or registration is about to expire
 cron.schedule("0 9 * * 1-5", async () => {
   console.log(`[${new Date().toLocaleString()}] Checking for any expiring docs`);
   const messages = await getPendingMesages();
+  const toDaria = messages.filter((message) => message.chat_id === dariaChatId);
+  const dariaMsgs = toDaria.map(({ message }) => message);
   const rateLimit = 25;
   for (const { chat_id, username, message, type } of messages) {
     const recipient = chat_id === dariaChatId ? "Daria" : chat_id;
@@ -34,7 +48,14 @@ cron.schedule("0 9 * * 1-5", async () => {
     if (chat_id !== dariaChatId) {
       await bot.telegram
         .sendMessage(chat_id, message, { parse_mode: "MarkdownV2" })
-        .catch(console.error);
+        .catch(({ response }: TelegramError) => {
+          console.error(
+            `\tError sending message to ${chat_id} (@${username}): ${response.description}`
+          );
+          dariaMsgs.push(
+            `Failed to notify @${username} about expiring ${type}\n\tError: ${response.description}`
+          );
+        });
       if (type === "visa") {
         await bot.telegram.sendPhoto(chat_id, VISA_PAYMENT_SLIP).catch(console.error);
       }
@@ -42,8 +63,6 @@ cron.schedule("0 9 * * 1-5", async () => {
     await updateLastNotified(username, type);
     await delay(1000 / rateLimit);
   }
-  const toDaria = messages.filter((message) => message.chat_id === dariaChatId);
-  const dariaMsgs = toDaria.map(({ message }) => message);
   for (const msg of chunkMessages(dariaMsgs)) {
     await bot.telegram
       .sendMessage(dariaChatId, msg, { parse_mode: "MarkdownV2" })
