@@ -26,7 +26,8 @@ function escapeSpecialChars(text: string) {
 
 export function dariaNotification(user: User, documentType: string) {
   let studentName = user.name;
-  if (user.telegram !== "") studentName += ` (@${user.telegram})`;
+  // Usernames can have underscores, which are interpreted as Markdown formatting
+  if (user.telegram !== "") studentName += ` (@${escapeSpecialChars(user.telegram)})`;
   studentName = escapeSpecialChars(studentName);
   return `The student ${studentName} could not be reached about their expiring *${documentType}*\\.`;
 }
