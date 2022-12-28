@@ -7,7 +7,7 @@ export function removeDuplicates(users: OmnideskUser[]): OmnideskUser[] {
     if (user.user_screen_name in userNameCache) {
       const idx = userNameCache[user.user_screen_name];
       if (users[idx].telegram_id !== user.telegram_id) {
-        console.warn(`Duplicate telegram alias found:`, user, users[idx]);
+        console.warn(`Duplicate telegram alias found. OmniDesk IDs:`, user.user_id, users[idx].user_id);
       }
       return false;
     }
@@ -15,7 +15,7 @@ export function removeDuplicates(users: OmnideskUser[]): OmnideskUser[] {
 
     if (user.telegram_id in tgIdCache) {
       const idx = tgIdCache[user.telegram_id];
-      console.warn(`Duplicate telegram chat_id found:`, user, users[idx]);
+      console.warn(`Duplicate telegram chat_id found. OmniDesk IDs:`, user.user_id, users[idx].user_id);
       return false;
     }
     tgIdCache[user.telegram_id] = i;
