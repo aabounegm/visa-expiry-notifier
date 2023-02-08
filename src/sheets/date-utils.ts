@@ -1,7 +1,7 @@
 import type { User } from "./user";
 
 export const DAYS_TO_VISA_EXPIRY = 40;
-export const DAYS_TO_REGISTRATION_EXPIRY = 7;
+export const DAYS_TO_REGISTRATION_EXPIRY = 14;
 
 export function isVisaAboutToExpire({ visaExpiry }: User) {
   const today = new Date();
