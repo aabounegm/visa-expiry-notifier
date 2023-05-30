@@ -14,7 +14,7 @@ P\\.S\\.: This is an automated message\\. Do not reply to this message\\. If you
 
 export const expiringRegistrationMessage = `Your *registration card* is about to expire soon\\. Please bring the following documents to 319 office as soon as possible to prolong it:
 \\- Copy of all nonempty pages of your passport
-\\- The current registration card and a copy of it
+\\- The current registration card
 
 Failure to provide the documents on time can result in paying a fine and being interrogated by the migration services\\. Two strikes in one year will result in deportation\\!
 
