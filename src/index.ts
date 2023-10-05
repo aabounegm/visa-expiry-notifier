@@ -43,7 +43,7 @@ cron.schedule("0 9 * * 1-5", async () => {
   const katyaMsgs = toKatya.map(({ message }) => message);
   const rateLimit = 25;
   for (const { chat_id, username, message, type } of messages) {
-    const recipient = chat_id === katyaChatId ? "Daria" : chat_id;
+    const recipient = chat_id === katyaChatId ? "Katya" : chat_id;
     console.log(`Notifying ${recipient} (@${username}) about expiring ${type}`);
     if (chat_id !== katyaChatId) {
       await bot.telegram

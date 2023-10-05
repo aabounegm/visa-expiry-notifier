@@ -1,7 +1,7 @@
 import { getAllExpiringDocs } from "../sheets/api";
 import { DAYS_TO_VISA_EXPIRY } from "../db/utils";
 import { sequelize, User } from "../db";
-import { expiringRegistrationMessage, expiringVisaMessage, dariaNotification } from "./messages";
+import { expiringRegistrationMessage, expiringVisaMessage, katyaNotification } from "./messages";
 import { DAYS_TO_REGISTRATION_EXPIRY } from "../sheets/date-utils";
 import { User as SheetUser } from "../sheets/user";
 import { Op } from "sequelize";
