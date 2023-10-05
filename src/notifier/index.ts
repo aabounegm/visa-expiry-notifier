@@ -75,7 +75,7 @@ interface Message {
   type: NotificationType;
 }
 
-export const dariaChatId = 701559870;
+export const katyaChatId = 1914456547;
 
 export async function getPendingMesages(): Promise<Message[]> {
   const {
@@ -114,9 +114,9 @@ export async function getPendingMesages(): Promise<Message[]> {
   messages.push(
     ...notFoundRegistration.map((student) => {
       return {
-        chat_id: dariaChatId,
+        chat_id: katyaChatId,
         username: student.telegram,
-        message: dariaNotification(student, "registration"),
+        message: katyaNotification(student, "registration"),
         type: NotificationType.REGISTRATION,
       };
     })
@@ -124,9 +124,9 @@ export async function getPendingMesages(): Promise<Message[]> {
   messages.push(
     ...notFoundVisa.map((student) => {
       return {
-        chat_id: dariaChatId,
+        chat_id: katyaChatId,
         username: student.telegram,
-        message: dariaNotification(student, "visa"),
+        message: katyaNotification(student, "visa"),
         type: NotificationType.VISA,
       };
     })
