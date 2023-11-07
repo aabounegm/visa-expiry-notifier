@@ -27,7 +27,7 @@ function escapeSpecialChars(text: string) {
 export function katyaNotification(user: User, documentType: string) {
   let studentName = user.name;
   // Usernames can have underscores, which are interpreted as Markdown formatting
-  if (user.telegram !== "") studentName += ` (@${escapeSpecialChars(user.telegram)})`;
+  if (user.telegram !== "") studentName += ` (@${user.telegram})`;
   studentName = escapeSpecialChars(studentName);
   return `The student ${studentName} could not be reached about their expiring *${documentType}*\\.`;
 }
