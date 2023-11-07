@@ -12,7 +12,7 @@ interface Override extends Partial<OmnideskUser> {
 export const overrides: Override[] = [
   { user_id: 18397579, user_screen_name: "TheUltimateSurvivor" }, // Ayhem Bouabid
   { user_id: 25855385, user_screen_name: "GammaV" }, // Roukaya Mabrouk
-  { user_id: 39015302, user_screen_name: "Eleutheromaniac_rabbit" }, // Ahmad Abid
+  { user_id: 39015302, user_screen_name: "Ahmed_fluffy" }, // Ahmad Abid
   { user_id: 38882486, user_screen_name: "mostafakira" }, // Mostafa Kira
   { user_id: 12669968, user_screen_name: "mahmooddarwish" }, // Mahmood Darwish
   { user_id: 17572204, user_screen_name: "KamilSabbagh" }, // Kamil Sabbagh
