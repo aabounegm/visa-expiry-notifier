@@ -57,7 +57,10 @@ async function getStudentsToBeNotified() {
   return {
     unnotifiedStudentsVisa,
     notFoundVisa,
-    unnotifiedStudentsRegistration,
+    // If visa and registration expire on the same day, don't notify about registration.
+    unnotifiedStudentsRegistration: unnotifiedStudentsRegistration.filter(
+      (user) => user.visaExpiration?.valueOf() !== user.registrationExpiration?.valueOf()
+    ),
     notFoundRegistration,
   };
 }
