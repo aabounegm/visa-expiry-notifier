@@ -6,7 +6,7 @@ import { fetchAllOmnideskUsers } from "../omnidesk/api";
 import { removeDuplicates } from "../omnidesk/helpers";
 
 export const DAYS_TO_VISA_EXPIRY = 50;
-export const DAYS_TO_REGISTRATION_EXPIRY = 14;
+export const DAYS_TO_REGISTRATION_EXPIRY = 25;
 
 export async function populateUsers() {
   console.log(`[${new Date().toLocaleString()}] Populating users...`);
