@@ -7,4 +7,5 @@ export interface User {
   registrationExpiry: Date;
   visaExpiry: Date;
   year: StudyYear;
+  temporaryResidency: boolean;
 }
