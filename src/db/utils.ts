@@ -28,7 +28,7 @@ export async function populateUsers() {
   const usersToInsert: InferCreationAttributes<User>[] = sheetStudents
     .filter((user) => !!user.telegram)
     .map((user) => {
-      const { telegram, name, visaExpiry, registrationExpiry } = user;
+      const { telegram, name, visaExpiry, registrationExpiry, temporaryResidency } = user;
       const omniUser = omniUsersMap.get(telegram);
       return {
         fullName: name,
@@ -38,6 +38,7 @@ export async function populateUsers() {
         registrationExpiration: registrationExpiry,
         registrationLastNotified: null,
         visaLastNotified: null,
+        temporaryResidency: temporaryResidency,
       };
     });
   console.log(

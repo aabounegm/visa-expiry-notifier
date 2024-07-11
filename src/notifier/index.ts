@@ -1,12 +1,26 @@
 import { getAllExpiringDocs } from "../sheets/api";
-import { DAYS_TO_VISA_EXPIRY, DAYS_TO_REGISTRATION_EXPIRY, DAYS_TO_REGISTRATION_EXPIRY_FOR_TEMP_RES } from "../db/utils";
+import {
+  DAYS_TO_VISA_EXPIRY,
+  DAYS_TO_REGISTRATION_EXPIRY,
+  DAYS_TO_REGISTRATION_EXPIRY_FOR_TEMP_RES,
+} from "../db/utils";
 import { sequelize, User } from "../db";
-import { expiringRegistrationMessage, expiringVisaMessage, expiringRegistrationForTemporaryResidency, katyaNotification } from "./messages";
+import {
+  expiringRegistrationMessage,
+  expiringVisaMessage,
+  expiringRegistrationForTemporaryResidency,
+  katyaNotification,
+} from "./messages";
 import { User as SheetUser } from "../sheets/user";
 import { Op } from "sequelize";
 
 async function getStudentsForDoc(users: SheetUser[], type: "visa" | "registration" | "residency") {
-  const days = type === "visa" ? DAYS_TO_VISA_EXPIRY : type === "registration" ? DAYS_TO_REGISTRATION_EXPIRY : DAYS_TO_REGISTRATION_EXPIRY_FOR_TEMP_RES;
+  const days =
+    type === "visa"
+      ? DAYS_TO_VISA_EXPIRY
+      : type === "registration"
+      ? DAYS_TO_REGISTRATION_EXPIRY
+      : DAYS_TO_REGISTRATION_EXPIRY_FOR_TEMP_RES;
   // Those are supposed to get notified and haven't been recently notified
   const unnotified = await User.findAll({
     where: {
@@ -45,16 +59,18 @@ async function getStudentsForDoc(users: SheetUser[], type: "visa" | "registratio
 }
 
 async function getStudentsToBeNotified() {
-  const { expiringRegistrations, expiringVisas, expiringResidency } = await getAllExpiringDocs();
+  const { expiringRegistrations, expiringVisas } = await getAllExpiringDocs();
 
-  const { notFound: notFoundVisa, unnotified: unnotifiedStudentsVisa } = 
-    await getStudentsForDoc(expiringVisas, "visa");
-    
+  const { notFound: notFoundVisa, unnotified: unnotifiedStudentsVisa } = await getStudentsForDoc(
+    expiringVisas,
+    "visa"
+  );
+
   const { notFound: notFoundRegistration, unnotified: unnotifiedStudentsRegistration } =
     await getStudentsForDoc(expiringRegistrations, "registration");
 
-  const { notFound: notFoundResidency, unnotified: unnotifiedStudentsResidency } =
-  await getStudentsForDoc(expiringRegistrations, "residency");
+  // const { notFound: notFoundResidency, unnotified: unnotifiedStudentsResidency } =
+  // await getStudentsForDoc(expiringRegistrations, "residency");
 
   return {
     unnotifiedStudentsVisa,
@@ -64,15 +80,12 @@ async function getStudentsToBeNotified() {
       (user) => user.visaExpiration?.valueOf() !== user.registrationExpiration?.valueOf()
     ),
     notFoundRegistration,
-    unnotifiedStudentsResidency,
-    notFoundResidency,
   };
 }
 
 export enum NotificationType {
   VISA = "visa",
   REGISTRATION = "registration",
-  RESIDENCY = "residency",
 }
 
 interface Message {
@@ -88,10 +101,8 @@ export async function getPendingMesages(): Promise<Message[]> {
   const {
     notFoundRegistration,
     notFoundVisa,
-    notFoundResidency,
     unnotifiedStudentsRegistration,
     unnotifiedStudentsVisa,
-    unnotifiedStudentsResidency,
   } = await getStudentsToBeNotified();
 
   console.log("Students to be notified about visa:", unnotifiedStudentsVisa.length);
@@ -104,7 +115,9 @@ export async function getPendingMesages(): Promise<Message[]> {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         chat_id: student.telegramChatId!,
         username: student.telegramUsername,
-        message: expiringRegistrationMessage,
+        message: student.temporaryResidency
+          ? expiringRegistrationForTemporaryResidency
+          : expiringRegistrationMessage,
         type: NotificationType.REGISTRATION,
       };
     })
@@ -117,17 +130,6 @@ export async function getPendingMesages(): Promise<Message[]> {
         username: student.telegramUsername,
         message: expiringVisaMessage,
         type: NotificationType.VISA,
-      };
-    })
-  );
-  messages.push(
-    ...unnotifiedStudentsResidency.map((student) => {
-      return {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        chat_id: student.telegramChatId!,
-        username: student.telegramUsername,
-        message: expiringRegistrationForTemporaryResidency,
-        type: NotificationType.RESIDENCY,
       };
     })
   );
@@ -148,16 +150,6 @@ export async function getPendingMesages(): Promise<Message[]> {
         username: student.telegram,
         message: katyaNotification(student, "visa"),
         type: NotificationType.VISA,
-      };
-    })
-  );
-  messages.push(
-    ...notFoundResidency.map((student) => {
-      return {
-        chat_id: katyaChatId,
-        username: student.telegram,
-        message: katyaNotification(student, "visa"),
-        type: NotificationType.RESIDENCY,
       };
     })
   );

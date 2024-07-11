@@ -1,5 +1,5 @@
 import { GoogleSpreadsheet } from "google-spreadsheet";
-import { isRegistrationAboutToExpire, isVisaAboutToExpire, isResidencyAboutToExpire } from "./date-utils";
+import { isRegistrationAboutToExpire, isVisaAboutToExpire } from "./date-utils";
 import type { User } from "./user";
 
 const SHEET_ID = "1vFmDJTnQdkkcU6XESmMHKzmKdXSSoyJ-VVZ5cENzE6s";
@@ -28,7 +28,6 @@ enum Fields {
 interface ExpiringDocs {
   expiringVisas: User[];
   expiringRegistrations: User[];
-  expiringResidency: User[];
 }
 
 const dateRegex = /(\d{1,2})\.(\d{1,2})\.(\d{4})/;
@@ -49,7 +48,7 @@ async function getStudentsInSheet(sheet: StudyYear) {
     registrationExpiry: getDateFromField(row[Fields.REGISTRATION_EXPIRY]),
     visaExpiry: getDateFromField(row[Fields.VISA_EXPIRY]),
     year: sheet,
-    temporaryRedidency: row[Fields.TEMPORARY_RESIDENCY] === "да" ? true : false,
+    temporaryResidency: row[Fields.TEMPORARY_RESIDENCY] === "да" ? true : false,
   }));
 }
 
@@ -57,8 +56,7 @@ export async function getAllExpiringDocs(): Promise<ExpiringDocs> {
   const users = await getAllStudents();
   const expiringVisas = users.filter(isVisaAboutToExpire);
   const expiringRegistrations = users.filter(isRegistrationAboutToExpire);
-  const expiringResidency = users.filter(isResidencyAboutToExpire);
-  return { expiringVisas, expiringRegistrations, expiringResidency };
+  return { expiringVisas, expiringRegistrations };
 }
 
 export async function getAllStudents(): Promise<User[]> {

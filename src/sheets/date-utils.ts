@@ -1,4 +1,8 @@
-import { DAYS_TO_REGISTRATION_EXPIRY, DAYS_TO_VISA_EXPIRY, DAYS_TO_REGISTRATION_EXPIRY_FOR_TEMP_RES } from "../db/utils";
+import {
+  DAYS_TO_REGISTRATION_EXPIRY,
+  DAYS_TO_VISA_EXPIRY,
+  DAYS_TO_REGISTRATION_EXPIRY_FOR_TEMP_RES,
+} from "../db/utils";
 import type { User } from "./user";
 
 export function isVisaAboutToExpire({ visaExpiry }: User) {
@@ -9,18 +13,10 @@ export function isVisaAboutToExpire({ visaExpiry }: User) {
   return diffDays <= DAYS_TO_VISA_EXPIRY;
 }
 
-export function isRegistrationAboutToExpire({ registrationExpiry }: User) {
+export function isRegistrationAboutToExpire({ registrationExpiry, temporaryResidency }: User) {
   const today = new Date();
   const diff = registrationExpiry.getTime() - today.getTime();
   const diffDays = Math.ceil(diff / (1000 * 3600 * 24));
-
+  if (temporaryResidency) return diffDays <= DAYS_TO_REGISTRATION_EXPIRY_FOR_TEMP_RES;
   return diffDays <= DAYS_TO_REGISTRATION_EXPIRY;
-}
-
-export function isResidencyAboutToExpire({ registrationExpiry, temporaryResidency }: User) {
-  const today = new Date();
-  const diff = registrationExpiry.getTime() - today.getTime();
-  const diffDays = Math.ceil(diff / (1000 * 3600 * 24));
-  // Check if the studend has temporary residency
-  return (temporaryResidency && diffDays <= DAYS_TO_REGISTRATION_EXPIRY_FOR_TEMP_RES);
 }
