@@ -7,6 +7,7 @@ import { removeDuplicates } from "../omnidesk/helpers";
 
 export const DAYS_TO_VISA_EXPIRY = 50;
 export const DAYS_TO_REGISTRATION_EXPIRY = 25;
+export const DAYS_TO_REGISTRATION_EXPIRY_FOR_TEMP_RES = 14;
 
 export async function populateUsers() {
   console.log(`[${new Date().toLocaleString()}] Populating users...`);
@@ -27,7 +28,7 @@ export async function populateUsers() {
   const usersToInsert: InferCreationAttributes<User>[] = sheetStudents
     .filter((user) => !!user.telegram)
     .map((user) => {
-      const { telegram, name, visaExpiry, registrationExpiry } = user;
+      const { telegram, name, visaExpiry, registrationExpiry, temporaryResidency } = user;
       const omniUser = omniUsersMap.get(telegram);
       return {
         fullName: name,
@@ -37,6 +38,7 @@ export async function populateUsers() {
         registrationExpiration: registrationExpiry,
         registrationLastNotified: null,
         visaLastNotified: null,
+        temporaryResidency: temporaryResidency,
       };
     });
   console.log(

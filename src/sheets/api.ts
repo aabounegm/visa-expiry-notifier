@@ -22,6 +22,7 @@ enum Fields {
   TELEGRAM = "Телеграмм",
   REGISTRATION_EXPIRY = "Регистрация до",
   VISA_EXPIRY = "Виза до",
+  TEMPORARY_RESIDENCY = "ВНЖ/РВП",
 }
 
 interface ExpiringDocs {
@@ -47,6 +48,7 @@ async function getStudentsInSheet(sheet: StudyYear) {
     registrationExpiry: getDateFromField(row[Fields.REGISTRATION_EXPIRY]),
     visaExpiry: getDateFromField(row[Fields.VISA_EXPIRY]),
     year: sheet,
+    temporaryResidency: row[Fields.TEMPORARY_RESIDENCY] === "да" ? true : false,
   }));
 }
 

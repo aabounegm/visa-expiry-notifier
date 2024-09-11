@@ -21,6 +21,8 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare visaExpiration: Date | null;
   /** The date when this user's registration expires */
   declare registrationExpiration: Date | null;
+  /** If user has temporary residency */
+  declare temporaryResidency: boolean | null;
 }
 
 export const attributes: ModelAttributes<User, InferAttributes<User>> = {
@@ -47,5 +49,9 @@ export const attributes: ModelAttributes<User, InferAttributes<User>> = {
   },
   registrationExpiration: {
     type: DataTypes.DATE,
+  },
+  temporaryResidency: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
   },
 };

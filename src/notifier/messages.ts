@@ -21,6 +21,15 @@ Failure to provide the documents on time can result in paying a fine and being i
 
 P\\.S\\.: This is an automated message\\. Do not reply to this message\\. If you already brought the documents, you can ignore this message\\.`;
 
+export const expiringRegistrationForTemporaryResidency = `Your *registration as a temporary residence permit holder* is about to expire soon\\. We remind you that an annual notification to the migration service in Verkhny Uslon \\(the UFMS\\) should be submitted once a year: 
+\\- Application of confirmation of residence 
+\\- Passport
+\\- Temporary residence permit document 
+
+Failure to provide the documents on time can result in paying a fine and being interrogated by the migration services\\. Two strikes in one year will result in deportation and TRP\\'s cancellation\\! 
+ 
+P\\.S\\.: This is an automated message\\. Do not reply to this message\\. If you already brought the documents, you can ignore this message\\.`;
+
 function escapeSpecialChars(text: string) {
   return text.replace(/[_*[\]()~`>#+\-=|{}.!]/g, "\\$&");
 }

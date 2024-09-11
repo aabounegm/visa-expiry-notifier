@@ -1,12 +1,26 @@
 import { getAllExpiringDocs } from "../sheets/api";
-import { DAYS_TO_VISA_EXPIRY, DAYS_TO_REGISTRATION_EXPIRY } from "../db/utils";
+import {
+  DAYS_TO_VISA_EXPIRY,
+  DAYS_TO_REGISTRATION_EXPIRY,
+  DAYS_TO_REGISTRATION_EXPIRY_FOR_TEMP_RES,
+} from "../db/utils";
 import { sequelize, User } from "../db";
-import { expiringRegistrationMessage, expiringVisaMessage, katyaNotification } from "./messages";
+import {
+  expiringRegistrationMessage,
+  expiringVisaMessage,
+  expiringRegistrationForTemporaryResidency,
+  katyaNotification,
+} from "./messages";
 import { User as SheetUser } from "../sheets/user";
 import { Op } from "sequelize";
 
-async function getStudentsForDoc(users: SheetUser[], type: "visa" | "registration") {
-  const days = type === "visa" ? DAYS_TO_VISA_EXPIRY : DAYS_TO_REGISTRATION_EXPIRY;
+async function getStudentsForDoc(users: SheetUser[], type: "visa" | "registration" | "residency") {
+  const days =
+    type === "visa"
+      ? DAYS_TO_VISA_EXPIRY
+      : type === "registration"
+      ? DAYS_TO_REGISTRATION_EXPIRY
+      : DAYS_TO_REGISTRATION_EXPIRY_FOR_TEMP_RES;
   // Those are supposed to get notified and haven't been recently notified
   const unnotified = await User.findAll({
     where: {
@@ -51,8 +65,12 @@ async function getStudentsToBeNotified() {
     expiringVisas,
     "visa"
   );
+
   const { notFound: notFoundRegistration, unnotified: unnotifiedStudentsRegistration } =
     await getStudentsForDoc(expiringRegistrations, "registration");
+
+  // const { notFound: notFoundResidency, unnotified: unnotifiedStudentsResidency } =
+  // await getStudentsForDoc(expiringRegistrations, "residency");
 
   return {
     unnotifiedStudentsVisa,
@@ -97,7 +115,9 @@ export async function getPendingMesages(): Promise<Message[]> {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         chat_id: student.telegramChatId!,
         username: student.telegramUsername,
-        message: expiringRegistrationMessage,
+        message: student.temporaryResidency
+          ? expiringRegistrationForTemporaryResidency
+          : expiringRegistrationMessage,
         type: NotificationType.REGISTRATION,
       };
     })
@@ -133,14 +153,13 @@ export async function getPendingMesages(): Promise<Message[]> {
       };
     })
   );
-
   return messages;
 }
 
 export async function updateLastNotified(username: string, type: NotificationType) {
   if (!username) return;
   const [affectedCount] = await User.update(
-    type == NotificationType.REGISTRATION
+    type == NotificationType.REGISTRATION || NotificationType.REGISTRATION
       ? { registrationLastNotified: new Date() }
       : { visaLastNotified: new Date() },
     {
