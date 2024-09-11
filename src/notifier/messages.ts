@@ -12,9 +12,10 @@ Failure to provide the documents on time can result in deportation\\!
 
 P\\.S\\.: This is an automated message\\. Do not reply to this message\\. If you already brought the documents, you can ignore this message\\.`;
 
-export const expiringRegistrationMessage = `Your *registration card* is about to expire soon\\. Please bring the following documents to 319 office as soon as possible to prolong it:
-\\- Copy of all nonempty pages of your passport
-\\- The current registration card
+export const expiringRegistrationMessage = `Your *registration card* is about to expire soon\\. Please send the following documents to the bot \\(or bring them to 319 office\\) as soon as possible to prolong it: 
+\\- Copy of all pages of your passport \\(including empty ones\\) 
+\\- The current registration card and a copy of it
+\\- The migration card 
 
 Failure to provide the documents on time can result in paying a fine and being interrogated by the migration services\\. Two strikes in one year will result in deportation\\!
 
