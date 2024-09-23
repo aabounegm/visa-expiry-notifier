@@ -21,6 +21,13 @@ Failure to provide the documents on time can result in paying a fine and being i
 
 P\\.S\\.: This is an automated message\\. Do not reply to this message\\. If you already brought the documents, you can ignore this message\\.`;
 
+export const expiringMedicalMessage = `Your *medical exam results* are about to expire soon\\. We remind you that according to the Federal Law \\№ 375 from 14\\.07\\.2022 every foreign citizen must take an obligatory medical exam once a year\\. It can be also taken before the current one's expired or up to a month after the day of expiration\\. 
+
+When you got the results, send them to the bot, please\\. The copy of results are submitted in Verkhny Uslon \\(the UFMS\\) by the migration specialist\\.
+
+❗️Failure to take the medical check up and provide the documents on time can result in paying a fine and being interrogated by the migration services\\. 
+
+P\\.S\\.\\: This is an automated message\\. Do not reply to this message\\. If you already brought the documents, you can ignore this message\\.`;
 function escapeSpecialChars(text: string) {
   return text.replace(/[_*[\]()~`>#+\-=|{}.!]/g, "\\$&");
 }

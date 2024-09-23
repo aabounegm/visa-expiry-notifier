@@ -6,5 +6,6 @@ export interface User {
   telegram: string;
   registrationExpiry: Date;
   visaExpiry: Date;
+  medicalExpiry: Date;
   year: StudyYear;
 }
