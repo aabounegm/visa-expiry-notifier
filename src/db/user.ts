@@ -21,7 +21,7 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare visaExpiration: Date | null;
   /** The date when this user's registration expires */
   declare registrationExpiration: Date | null;
-  /** The date when this user's medical doc's expires */
+  /** The date when this user's medical docs expire */
   declare medicalExpiration: Date | null;
   /** The last time this user has been notified about their expiring medical documents */
   declare medicalLastNotified: Date | null;
