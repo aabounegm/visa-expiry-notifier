@@ -13,6 +13,7 @@ import {
 } from "./messages";
 import { User as SheetUser } from "../sheets/user";
 import { Op } from "sequelize";
+
 type DocType = "visa" | "registration" | "medical";
 
 const docExpiryDays: Record<DocType, number> = {
@@ -20,6 +21,7 @@ const docExpiryDays: Record<DocType, number> = {
   registration: DAYS_TO_REGISTRATION_EXPIRY,
   medical: DAYS_TO_MEDICAL_EXPIRY,
 };
+
 async function getStudentsForDoc(users: SheetUser[], type: DocType) {
   const days = docExpiryDays[type];
   // Those are supposed to get notified and haven't been recently notified
