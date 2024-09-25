@@ -13,15 +13,15 @@ import {
 } from "./messages";
 import { User as SheetUser } from "../sheets/user";
 import { Op } from "sequelize";
+type DocType = "visa" | "registration" | "medical";
 
-async function getStudentsForDoc(users: SheetUser[], type: "visa" | "registration" | "medical") {
-  let d = DAYS_TO_MEDICAL_EXPIRY;
-  if (type === "visa") {
-    d = DAYS_TO_VISA_EXPIRY;
-  } else if (type === "registration") {
-    d = DAYS_TO_REGISTRATION_EXPIRY;
-  }
-  const days = d;
+const docExpiryDays: Record<DocType, number> = {
+  visa: DAYS_TO_VISA_EXPIRY,
+  registration: DAYS_TO_REGISTRATION_EXPIRY,
+  medical: DAYS_TO_MEDICAL_EXPIRY,
+};
+async function getStudentsForDoc(users: SheetUser[], type: DocType) {
+  const days = docExpiryDays[type];
   // Those are supposed to get notified and haven't been recently notified
   const unnotified = await User.findAll({
     where: {

@@ -28,6 +28,7 @@ When you get the results, send them to the bot, please\\. A copy of results are 
 ❗️Failure to take the medical check up and provide the documents on time can result in paying a fine and being interrogated by the migration services\\. 
 
 P\\.S\\.\\: This is an automated message\\. Do not reply to this message\\. If you already brought the documents, you can ignore this message\\.`;
+
 function escapeSpecialChars(text: string) {
   return text.replace(/[_*[\]()~`>#+\-=|{}.!]/g, "\\$&");
 }
