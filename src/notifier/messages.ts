@@ -23,7 +23,7 @@ P\\.S\\.: This is an automated message\\. Do not reply to this message\\. If you
 
 export const expiringMedicalMessage = `Your *medical exam results* are about to expire soon\\. We remind you that, according to the Federal Law \\№ 375 from 14\\.07\\.2022, every foreign citizen must take an obligatory medical exam once a year\\. It can be also taken before the current one expires or up to a month after the day of expiration\\. 
 
-When you got the results, send them to the bot, please\\. The copy of results are submitted in Verkhny Uslon \\(the UFMS\\) by the migration specialist\\.
+When you get the results, send them to the bot, please\\. A copy of results are submitted in Verkhniy Uslon \\(the UFMS\\) by the migration specialist\\.
 
 ❗️Failure to take the medical check up and provide the documents on time can result in paying a fine and being interrogated by the migration services\\. 
 
