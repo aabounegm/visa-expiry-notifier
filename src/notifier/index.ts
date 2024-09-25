@@ -1,12 +1,29 @@
 import { getAllExpiringDocs } from "../sheets/api";
-import { DAYS_TO_VISA_EXPIRY, DAYS_TO_REGISTRATION_EXPIRY } from "../db/utils";
+import {
+  DAYS_TO_VISA_EXPIRY,
+  DAYS_TO_REGISTRATION_EXPIRY,
+  DAYS_TO_MEDICAL_EXPIRY,
+} from "../db/utils";
 import { sequelize, User } from "../db";
-import { expiringRegistrationMessage, expiringVisaMessage, katyaNotification } from "./messages";
+import {
+  expiringMedicalMessage,
+  expiringRegistrationMessage,
+  expiringVisaMessage,
+  katyaNotification,
+} from "./messages";
 import { User as SheetUser } from "../sheets/user";
 import { Op } from "sequelize";
 
-async function getStudentsForDoc(users: SheetUser[], type: "visa" | "registration") {
-  const days = type === "visa" ? DAYS_TO_VISA_EXPIRY : DAYS_TO_REGISTRATION_EXPIRY;
+type DocType = "visa" | "registration" | "medical";
+
+const docExpiryDays: Record<DocType, number> = {
+  visa: DAYS_TO_VISA_EXPIRY,
+  registration: DAYS_TO_REGISTRATION_EXPIRY,
+  medical: DAYS_TO_MEDICAL_EXPIRY,
+};
+
+async function getStudentsForDoc(users: SheetUser[], type: DocType) {
+  const days = docExpiryDays[type];
   // Those are supposed to get notified and haven't been recently notified
   const unnotified = await User.findAll({
     where: {
@@ -53,7 +70,8 @@ async function getStudentsToBeNotified() {
   );
   const { notFound: notFoundRegistration, unnotified: unnotifiedStudentsRegistration } =
     await getStudentsForDoc(expiringRegistrations, "registration");
-
+  const { notFound: notFoundMedical, unnotified: unnotifiedStudentsMedical } =
+    await getStudentsForDoc(expiringRegistrations, "medical");
   return {
     unnotifiedStudentsVisa,
     notFoundVisa,
@@ -62,12 +80,15 @@ async function getStudentsToBeNotified() {
       (user) => user.visaExpiration?.valueOf() !== user.registrationExpiration?.valueOf()
     ),
     notFoundRegistration,
+    unnotifiedStudentsMedical,
+    notFoundMedical,
   };
 }
 
 export enum NotificationType {
   VISA = "visa",
   REGISTRATION = "registration",
+  MEDICAL = "medical documents",
 }
 
 interface Message {
@@ -83,13 +104,19 @@ export async function getPendingMesages(): Promise<Message[]> {
   const {
     notFoundRegistration,
     notFoundVisa,
+    notFoundMedical,
     unnotifiedStudentsRegistration,
     unnotifiedStudentsVisa,
+    unnotifiedStudentsMedical,
   } = await getStudentsToBeNotified();
 
   console.log("Students to be notified about visa:", unnotifiedStudentsVisa.length);
   console.log("Students to be notified about registration:", unnotifiedStudentsRegistration.length);
-  console.log("Students not found in database:", notFoundVisa.length + notFoundRegistration.length);
+  console.log("Students to be notified about medical documents:", unnotifiedStudentsMedical.length);
+  console.log(
+    "Students not found in database:",
+    notFoundVisa.length + notFoundRegistration.length + notFoundMedical.length
+  );
   const messages: Message[] = [];
   messages.push(
     ...unnotifiedStudentsRegistration.map((student) => {
@@ -114,6 +141,17 @@ export async function getPendingMesages(): Promise<Message[]> {
     })
   );
   messages.push(
+    ...unnotifiedStudentsMedical.map((student) => {
+      return {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        chat_id: student.telegramChatId!,
+        username: student.telegramUsername,
+        message: expiringMedicalMessage,
+        type: NotificationType.MEDICAL,
+      };
+    })
+  );
+  messages.push(
     ...notFoundRegistration.map((student) => {
       return {
         chat_id: katyaChatId,
@@ -133,7 +171,16 @@ export async function getPendingMesages(): Promise<Message[]> {
       };
     })
   );
-
+  messages.push(
+    ...notFoundMedical.map((student) => {
+      return {
+        chat_id: katyaChatId,
+        username: student.telegram,
+        message: katyaNotification(student, "medical documents"),
+        type: NotificationType.MEDICAL,
+      };
+    })
+  );
   return messages;
 }
 
@@ -142,7 +189,10 @@ export async function updateLastNotified(username: string, type: NotificationTyp
   const [affectedCount] = await User.update(
     type == NotificationType.REGISTRATION
       ? { registrationLastNotified: new Date() }
-      : { visaLastNotified: new Date() },
+      : type === NotificationType.VISA
+      ? { visaLastNotified: new Date() }
+      : { medicalLastNotified: new Date() },
+
     {
       where: {
         telegramUsername: username,

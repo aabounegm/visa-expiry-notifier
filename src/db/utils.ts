@@ -7,6 +7,7 @@ import { removeDuplicates } from "../omnidesk/helpers";
 
 export const DAYS_TO_VISA_EXPIRY = 50;
 export const DAYS_TO_REGISTRATION_EXPIRY = 25;
+export const DAYS_TO_MEDICAL_EXPIRY = 20;
 
 export async function populateUsers() {
   console.log(`[${new Date().toLocaleString()}] Populating users...`);
@@ -27,7 +28,7 @@ export async function populateUsers() {
   const usersToInsert: InferCreationAttributes<User>[] = sheetStudents
     .filter((user) => !!user.telegram)
     .map((user) => {
-      const { telegram, name, visaExpiry, registrationExpiry } = user;
+      const { telegram, name, visaExpiry, registrationExpiry, medicalExpiry } = user;
       const omniUser = omniUsersMap.get(telegram);
       return {
         fullName: name,
@@ -35,8 +36,10 @@ export async function populateUsers() {
         telegramChatId: omniUser == undefined ? null : Number(omniUser.telegram_id),
         visaExpiration: visaExpiry,
         registrationExpiration: registrationExpiry,
+        medicalExpiration: medicalExpiry,
         registrationLastNotified: null,
         visaLastNotified: null,
+        medicalLastNotified: null,
       };
     });
   console.log(
@@ -46,6 +49,11 @@ export async function populateUsers() {
   console.log("Inserting/updating", usersToInsert.length, "users");
   await User.bulkCreate(usersToInsert, {
     ignoreDuplicates: true,
-    updateOnDuplicate: ["registrationExpiration", "visaExpiration", "telegramChatId"],
+    updateOnDuplicate: [
+      "registrationExpiration",
+      "visaExpiration",
+      "medicalExpiration",
+      "telegramChatId",
+    ],
   });
 }
